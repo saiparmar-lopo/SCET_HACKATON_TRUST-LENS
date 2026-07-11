@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TrustLens Live</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+
+  <!-- ================= HEADER ================= -->
+  <header class="header">
+    <h1 class="logo">TrustLens Live</h1>
+
+    <div class="header-actions">
+      <button id="refreshBtn" class="icon-btn" aria-label="Refresh">↻</button>
+      <button id="settingsBtn" class="icon-btn" aria-label="Settings">⚙️</button>
+    </div>
+  </header>
+
+  <!-- ================= STATUS BAR ================= -->
+  <section class="status-bar" aria-live="polite">
+    <span id="statusIndicator" class="status-indicator"></span>
+    <span id="statusText" class="status-text">Ready</span>
+    <span id="syncTime" class="sync-time"></span>
+  </section>
+
+  <!-- ================= MAIN CONTENT ================= -->
+  <main class="content">
+
+    <!-- Tabs -->
+    <div class="tabs" role="tablist">
+      <button role="tab" aria-selected="true" aria-controls="resultTab" id="tabResult" class="tab active">Result</button>
+      <button role="tab" aria-selected="false" aria-controls="historyTab" id="tabHistory" class="tab">History</button>
+      <button role="tab" aria-selected="false" aria-controls="settingsTab" id="tabSettings" class="tab">Settings</button>
+      <button role="tab" aria-selected="false" aria-controls="statsTab" id="tabStats" class="tab">Stats</button>
+    </div>
+
+    <!-- ================= RESULT TAB ================= -->
+    <section id="resultTab" class="tab-content active" role="tabpanel">
+
+      <!-- Loading -->
+      <div id="loadingState" class="state hidden">
+        <div class="spinner"></div>
+        <p>Analyzing selection...</p>
+      </div>
+
+      <!-- Result Content -->
+      <div id="resultContent" class="state hidden">
+
+        <div class="result-section">
+
+          <div class="result-header">
+            <h3>Current Analysis</h3>
+            <span id="resultBadge" class="result-badge">Live</span>
+          </div>
+
+          <!-- Score -->
+          <div class="score-container">
+            <div id="scoreCircle" class="score-circle" data-score="0">
+              <span id="scoreValue" class="score-value">--</span>
+            </div>
+          </div>
+          <p class="score-label">Trust Score</p>
+
+          <!-- Verdict -->
+          <div id="verdictBadge" class="verdict-badge neutral">
+            Awaiting verification
+          </div>
+
+          <!-- Reason -->
+          <div id="reasonBox" class="reason-box">
+            Select text on any webpage and verify with TrustLens.
+          </div>
+
+          <!-- Confidence -->
+          <div id="confidenceSection" class="confidence-meter hidden">
+            <div class="confidence-label">
+              <span>Confidence</span>
+              <span id="confidenceValue">0%</span>
+            </div>
+            <div class="confidence-bar">
+              <div id="confidenceFill" class="confidence-fill"></div>
+            </div>
+          </div>
+
+          <!-- Details -->
+          <div class="details-grid">
+            <div class="detail-item">
+              <span class="detail-label">Method</span>
+              <span id="analysisMethod" class="detail-value">—</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Processing</span>
+              <span id="processingTime" class="detail-value">—</span>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="action-buttons">
+            <button id="verifyNewBtn" class="btn btn-primary">Verify New</button>
+            <button id="copyResultBtn" class="btn btn-secondary">Copy</button>
+            <button id="shareResultBtn" class="btn btn-secondary">Share</button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Empty -->
+      <div id="emptyState" class="state">
+        <div class="empty-icon">🛡️</div>
+        <p>Select text anywhere and verify claims instantly.</p>
+        <button id="learnMoreBtn" class="btn btn-primary">Learn More</button>
+      </div>
+
+    </section>
+
+    <!-- ================= HISTORY TAB ================= -->
+    <section id="historyTab" class="tab-content" role="tabpanel" hidden>
+      <div id="historyList" class="history-list"></div>
+      <div class="action-buttons">
+        <button id="exportHistoryBtn" class="btn btn-secondary">Export</button>
+        <button id="clearHistoryBtn" class="btn btn-danger">Clear</button>
+      </div>
+    </section>
+
+    <!-- ================= SETTINGS TAB ================= -->
+    <section id="settingsTab" class="tab-content" role="tabpanel" hidden>
+      <div class="settings-group">
+        <h3>Verification</h3>
+        <label class="setting-item">
+          <span>Auto-highlight results</span>
+          <input type="checkbox" id="highlightEnabled">
+        </label>
+
+        <label class="setting-item">
+          <span>Show popup cards</span>
+          <input type="checkbox" id="popupEnabled">
+        </label>
+
+        <label class="setting-item">
+          <span>Enable AI analysis</span>
+          <input type="checkbox" id="enableAI">
+        </label>
+      </div>
+
+      <div class="settings-group">
+        <h3>Appearance</h3>
+        <select id="themeSelect">
+          <option value="system">System</option>
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+        </select>
+      </div>
+
+      <div class="action-buttons">
+        <button id="saveSettingsBtn" class="btn btn-primary">Save</button>
+        <button id="resetSettingsBtn" class="btn btn-secondary">Reset</button>
+      </div>
+    </section>
+
+    <!-- ================= STATS TAB ================= -->
+    <section id="statsTab" class="tab-content" role="tabpanel" hidden>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span id="totalVerifications" class="stat-value">0</span>
+          <span class="stat-label">Total Checks</span>
+        </div>
+        <div class="stat-card">
+          <span id="verifiedClaims" class="stat-value">0</span>
+          <span class="stat-label">Verified</span>
+        </div>
+        <div class="stat-card">
+          <span id="flaggedClaims" class="stat-value">0</span>
+          <span class="stat-label">Flagged</span>
+        </div>
+        <div class="stat-card">
+          <span id="avgResponseTime" class="stat-value">0ms</span>
+          <span class="stat-label">Avg Response</span>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="footer">
+    <span>v3.0.0</span>
+    <div class="footer-links">
+      <button id="feedbackLink" class="link-btn">Feedback</button>
+      <button id="helpLink" class="link-btn">Help</button>
+    </div>
+  </footer>
+
+  <script src="popup.js" type="module"></script>
+</body>
+</html>
